@@ -2,21 +2,126 @@ version: '3.1'
 services:
   db:
     image: mariadb:latest
+    container_name: mariadb
     environment:
       - MARIADB_ALLOW_EMPTY_PASSWORD=yes
-      - MARIADB_ROOT_PASSWORD=root
-      - MARIADB_USER=benefrancis
+      - MARIADB_USER=root
       - MARIADB_PASSWORD=root
       - MARIADB_DATABASE=orders
+      - MARIADB_ROOT_PASSWORD=root
     volumes:
-      - ./data:/var/lib/mariadb
+      - ./data:/var/lib/mysql
     ports:
       - "3306:3306"
+    networks:
+      back-tier:
+        aliases:
+          - database
+      admin:
+        aliases:
+          - mysql
+ 
+ 
   rabbitmq:
    image: rabbitmq:3.7.8-management
+   container_name: rabbitmq
    ports: 
-   - 5672:5672
-   - 15672:15672
+    - 5672:5672
+    - 15672:15672
    environment: 
-   - RABBITMQ_DEFAULT_USER=rabbitmq
-   - RABBITMQ_DEFAULT_PASS=rabbitmq
+    - RABBITMQ_DEFAULT_USER=rabbitmq
+    - RABBITMQ_DEFAULT_PASS=rabbitmq
+   healthcheck:
+    test: [ "CMD", "rabbitmqctl", "status"]
+    interval: 5s
+    timeout: 20s
+    retries: 5
+   networks:
+    back-tier:
+      aliases:
+        - database
+    admin:
+      aliases:
+        - mysql
+
+
+  cashback:
+   image: benefrancis/cashback:0.0.2
+   container_name: cashback
+   build:
+    context: .                          #docker file path (. means root directory)
+    dockerfile: /cashback/Dockerfile    #docker file name
+   ports:
+     - 8081:8081
+   environment:
+    - SPRING_RABBITMQ_HOST=rabbitmq  
+   healthcheck:
+    test: curl --fail http://localhost:8081 || exit 1
+    interval: 60s
+    retries: 5
+    start_period: 20s
+    timeout: 10s
+   restart: always
+   depends_on:
+     - rabbitmq
+   networks:
+    back-tier:
+      aliases:
+        - cashback
+ 
+
+
+  notification:
+   image: benefrancis/notification:0.0.2
+   container_name: notification
+   build:
+    context: .                           #docker file path (. means root directory)
+    dockerfile: /notification/Dockerfile #docker file name
+   ports:
+     - 8082:8082
+   environment:
+    - SPRING_RABBITMQ_HOST=rabbitmq  
+   healthcheck:
+    test: curl --fail http://localhost:8082 || exit 1
+    interval: 60s
+    retries: 5
+    start_period: 20s
+    timeout: 10s
+   restart: always
+   depends_on:
+     - rabbitmq
+   networks:
+    back-tier:
+      aliases:
+        - notification
+
+
+  order:
+   image: benefrancis/order:0.0.2
+   container_name: order
+   build:
+    context: .                    #docker file path (. means root directory)
+    dockerfile: /order/Dockerfile #docker file name
+   ports:
+     - 8080:8080
+   environment:
+    - SPRING_RABBITMQ_HOST=rabbitmq  
+   healthcheck:
+    test: curl --fail http://localhost:8080 || exit 1
+    interval: 60s
+    retries: 5
+    start_period: 20s
+    timeout: 10s
+   restart: always
+   depends_on:
+     - rabbitmq
+   networks:
+    back-tier:
+      aliases:
+        - order
+
+
+networks:
+  front-tier:
+  back-tier:
+  admin:

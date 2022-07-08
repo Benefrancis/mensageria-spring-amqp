@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>br.com.benefrancis</groupId>
 	<artifactId>cashback</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2</version>
 	<name>cashback</name>
 	<description>Service de cashback</description>
 	<properties>
@@ -68,6 +68,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+	<finalName>cashback</finalName>
 	</build>
 	<repositories>
 		<repository>

@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>br.com.benefrancis</groupId>
 	<artifactId>notification</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2</version>
 	<name>notification</name>
 	<description>Service de notificação</description>
 	<properties>
@@ -45,7 +45,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-amqp</artifactId>
 		</dependency>
-		
+
 	</dependencies>
 
 	<build>
@@ -63,6 +63,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>notification</finalName>
 	</build>
 	<repositories>
 		<repository>

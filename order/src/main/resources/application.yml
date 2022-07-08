@@ -1,13 +1,24 @@
 spring:
   datasource:
-    username: root
-    url: jdbc:mariadb://localhost:3306/orders?createDatabaseIfNotExist=true&serverTimezone=UTC&useSSL=false
-    password: 'root'
+   url: jdbc:mariadb://localhost:3306/orders?createDatabaseIfNotExist=true&serverTimezone=UTC&useSSL=false
+   username: root
+   password: root
+   driver-class-name: org.mariadb.jdbc.Driver
+   hikari:
+    connection-timeout: 300000
+    max-lifetime: 180000
+    minimum-idle: 200
+    validation-timeout: 3000
+    idle-timeout: 10000
   jpa:
-    show-sql: 'true'
-    hibernate:
-      ddl-auto: 'update'
-    open-in-view: false
+   open-in-view: true
+   database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+   generate-ddl: true
+   properties:
+     hibernate:
+      dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+      ddl-auto: update
+   show-sql: true
   rabbitmq:
     host: localhost
     port: 5672
