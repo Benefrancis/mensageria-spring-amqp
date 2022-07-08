@@ -7,4 +7,9 @@ spring:
     show-sql: 'true'
     hibernate:
       ddl-auto: 'update'
-    open-in-view: false 
+    open-in-view: false
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: rabbitmq
+    password: rabbitmq
