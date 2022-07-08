@@ -1,7 +1,7 @@
 FROM openjdk:17 as rabbitmq
 LABEL maintainer="Benefrancis do Nascimento"
 EXPOSE 8080
-WORKDIR /
+WORKDIR /app
 
 # Copy maven executable to the image
 COPY mvnw .

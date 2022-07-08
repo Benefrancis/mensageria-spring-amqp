@@ -1,6 +1,6 @@
 version: '3.1'
 services:
-  db:
+  mariadb:
     image: mariadb:latest
     container_name: mariadb
     environment:
@@ -10,17 +10,13 @@ services:
       - MARIADB_DATABASE=orders
       - MARIADB_ROOT_PASSWORD=root
     volumes:
-      - ./data:/var/lib/mysql
+      - /var/lib/mysql:/var/lib/mysql
     ports:
       - "3306:3306"
     networks:
       back-tier:
         aliases:
-          - database
-      admin:
-        aliases:
-          - mysql
- 
+          - mariadb
  
   rabbitmq:
    image: rabbitmq:3.7.8-management
@@ -31,6 +27,8 @@ services:
    environment: 
     - RABBITMQ_DEFAULT_USER=rabbitmq
     - RABBITMQ_DEFAULT_PASS=rabbitmq
+   depends_on:
+     - mariadb
    healthcheck:
     test: [ "CMD", "rabbitmqctl", "status"]
     interval: 5s
@@ -39,11 +37,7 @@ services:
    networks:
     back-tier:
       aliases:
-        - database
-    admin:
-      aliases:
-        - mysql
-
+        - rabbitmq
 
   cashback:
    image: benefrancis/cashback:0.0.2
@@ -68,8 +62,6 @@ services:
     back-tier:
       aliases:
         - cashback
- 
-
 
   notification:
    image: benefrancis/notification:0.0.2
@@ -123,5 +115,9 @@ services:
 
 networks:
   front-tier:
+    driver: bridge
   back-tier:
+    driver: bridge
   admin:
+    driver: bridge
+ 

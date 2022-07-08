@@ -18,6 +18,7 @@ public class Order {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
 	private BigDecimal value = BigDecimal.ZERO;
 	private Boolean paid = Boolean.FALSE;
  
